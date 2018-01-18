@@ -4,14 +4,12 @@ require 'file/tail'
 require 'json'
 require 'terminfo'
 
-LEFT_WIDTH = 42
+LEFT_WIDTH = 41
 LINE_WIDTH = TermInfo.screen_size.last - LEFT_WIDTH
 
 class String
-  TO_LENGTH = 30
-
-  def to_l(to_length = nil)
-    diff = (to_length || TO_LENGTH) - length
+  def to_l(to_length)
+    diff = to_length - length
     return "#{self}#{diff.times.map{' '}.join}" if diff > 0
     self
   end
@@ -27,10 +25,32 @@ class String
   end
 end
 
+def worker(json)
+  "\e[34m[#{(json['worker'] || 'no_worker').to_l(28)}]\e[0m"
+end
+
+def color_from_status(status)
+  case status
+  when 'error'   then '31'  # red
+  when 'warning' then '33'  # yellow
+  when 'start'   then '92'  # light green
+  when 'success' then '32'  # green
+  else
+    '94' # light blue
+  end
+end
+
+def status(json)
+  status = json['status'] || 'info'
+  "\e[#{color_from_status(status)}m[#{status.to_l(7)}]\e[0m"
+end
+
+def message(json)
+  (json['message'] || '').indented
+end
+
 def display(json)
-  worker = "[#{(json['worker'] || 'no_worker')}]"
-  status = "[#{(json['status'] || 'info' )}]"
-  puts "\e[34m#{worker.to_l}\e[0m \e[94m#{status.to_l(9)}:\e[0m #{(json['message'] || '').indented}"
+  puts "#{worker(json)} #{status(json)} #{message(json)}"
 end
 
 filename = ARGV.pop or fail "Usage: #$0 number filename"
@@ -41,6 +61,10 @@ File::Tail::Logfile.open(filename) do |log|
   log.max_interval = 0.1
   log.backward(number)
   log.tail do |line|
-    display(JSON.parse(line))
+    begin
+      display(JSON.parse(line))
+    rescue
+      puts line
+    end
   end
 end
