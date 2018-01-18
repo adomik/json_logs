@@ -13,7 +13,7 @@ $ chmod +x tailf.rb
 
 ```bash
 $ cd ~/dev/my_project
-$ ~/dev/json_logs/tailf.rb 10 logs/development_json.log
+$ ~/dev/json_logs/tailf.rb 10 log/development_json.log
 ```
 
 ## Customization
