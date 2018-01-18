@@ -56,15 +56,29 @@ end
 filename = ARGV.pop or fail "Usage: #$0 number filename"
 number = (ARGV.pop || 0).to_i.abs
 
-File::Tail::Logfile.open(filename) do |log|
-  log.interval = 0.1
-  log.max_interval = 0.1
-  log.backward(number)
-  log.tail do |line|
-    begin
-      display(JSON.parse(line))
-    rescue
-      puts line
+shell_reader = Thread.new do
+  while (inp = gets) && inp != "q\n" do
+    if inp == "\n"
+      puts (LINE_WIDTH + LEFT_WIDTH).times.map{'_'}.join
+      puts ''
     end
   end
 end
+
+tail = Thread.new do
+  File::Tail::Logfile.open(filename) do |log|
+    log.interval = 0.1
+    log.max_interval = 0.1
+    log.backward(number)
+    log.tail do |line|
+      begin
+        display(JSON.parse(line))
+      rescue
+        puts line
+      end
+    end
+  end
+end
+
+tail.join
+shell_reader.join
