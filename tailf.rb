@@ -21,7 +21,10 @@ filename = ARGV.pop or fail "Usage: #$0 number filename"
 number = (ARGV.pop || 0).to_i.abs
 
 File::Tail::Logfile.open(filename) do |log|
-  log.backward(number).tail do |line|
+  log.interval = 0.1
+  log.max_interval = 0.1
+  log.backward(number)
+  log.tail do |line|
     json = JSON.parse(line)
     worker = "[#{(json['worker'] || 'no_worker')}]"
     status = "[#{(json['status'] || 'info' )}]"
