@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    file-tail (1.2.0)
+      tins (~> 1.0)
+    json (2.1.0)
+    tins (1.16.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  file-tail
+  json
+
+BUNDLED WITH
+   1.14.3
