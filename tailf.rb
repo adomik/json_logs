@@ -30,7 +30,7 @@ end
 def display(json)
   worker = "[#{(json['worker'] || 'no_worker')}]"
   status = "[#{(json['status'] || 'info' )}]"
-  puts "#{worker.to_l} #{status.to_l(9)}: #{(json['message'] || '').indented}"
+  puts "\e[34m#{worker.to_l}\e[0m \e[94m#{status.to_l(9)}:\e[0m #{(json['message'] || '').indented}"
 end
 
 filename = ARGV.pop or fail "Usage: #$0 number filename"
