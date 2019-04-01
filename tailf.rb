@@ -26,7 +26,7 @@ class String
 end
 
 def worker(json)
-  "\e[34m[#{(json['worker'] || 'no_worker').to_l(28)}]\e[0m"
+  "\e[34m[#{(json[:worker] || 'no_worker').to_l(28)}]\e[0m"
 end
 
 def color_from_status(status)
@@ -41,12 +41,12 @@ def color_from_status(status)
 end
 
 def status(json)
-  status = json['status'] || 'info'
+  status = json[:status] || 'info'
   "\e[#{color_from_status(status)}m[#{status.to_l(7)}]\e[0m"
 end
 
 def message(json)
-  (json['message'] || '').indented
+  (json[:message] || '').indented
 end
 
 def display(json)
@@ -71,8 +71,10 @@ tail = Thread.new do
     log.max_interval = 0.1
     log.backward(number)
     log.tail do |line|
+      line = line[49..-1]
       begin
-        display(JSON.parse(line))
+        line = eval(line)
+        display(line)
       rescue
         puts line
       end
