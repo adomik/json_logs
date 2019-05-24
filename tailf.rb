@@ -53,6 +53,13 @@ def display(json)
   puts "#{worker(json)} #{status(json)} #{message(json)}"
 end
 
+def parse_line(line)
+  num = line.index '{' || 49
+  line = line[num..-1]
+  line = eval(line)
+  display(line)
+end
+
 filename = ARGV.pop or fail "Usage: #$0 number filename"
 number = (ARGV.pop || 0).to_i.abs
 
@@ -71,11 +78,9 @@ tail = Thread.new do
     log.max_interval = 0.1
     log.backward(number)
     log.tail do |line|
-      line = line[49..-1]
       begin
-        line = eval(line)
-        display(line)
-      rescue
+        display(parse_line(line))
+      rescue Exception => exc
         puts line
       end
     end
