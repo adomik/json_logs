@@ -57,8 +57,11 @@ filename = ARGV.pop or fail "Usage: #$0 number filename"
 number = (ARGV.pop || 0).to_i.abs
 
 shell_reader = Thread.new do
-  while (inp = gets) && inp != "q\n" do
-    if inp == "\n"
+  while (inp = gets.chomp) do
+    if inp == 'q'
+      puts "Bye bye ! :wave:"
+      exit 0
+    elsif inp == "\n"
       puts (LINE_WIDTH + LEFT_WIDTH).times.map{'_'}.join
       puts ''
     end
@@ -71,11 +74,12 @@ tail = Thread.new do
     log.max_interval = 0.1
     log.backward(number)
     log.tail do |line|
-      line = line[49..-1]
+      matches = line.match(/(?<json>\{.*\})/)
       begin
-        line = eval(line)
+        line = eval(matches[:json].gsub(/:null/, ':nil'))
         display(line)
-      rescue
+      rescue => e
+        puts "\e[#{color_from_status('warning')}m[json_logs] Caught error:\e[0m \e[#{color_from_status('error')}m\"#{e}\"\e[0m \e[#{color_from_status('warning')}mwhile parsing:\e[0m"
         puts line
       end
     end
