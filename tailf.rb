@@ -78,7 +78,7 @@ tail = Thread.new do
       begin
         line = eval(matches[:json].gsub(/:null/, ':nil'))
         display(line)
-      rescue => e
+      rescue Exception => e
         puts "\e[#{color_from_status('warning')}m[json_logs] Caught error:\e[0m \e[#{color_from_status('error')}m\"#{e}\"\e[0m \e[#{color_from_status('warning')}mwhile parsing:\e[0m"
         puts line
       end
