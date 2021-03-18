@@ -3,7 +3,7 @@ GEM
   specs:
     file-tail (1.2.0)
       tins (~> 1.0)
-    json (2.1.0)
+    json (2.3.0)
     ruby-terminfo (0.1.1)
     tins (1.16.3)
 
